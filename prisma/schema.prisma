@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,37 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+
+//Models gerado de forma automatica atraves do npx prisma db pull
+// Apos foi corrigido os nomes dos models para camelcase no singular, configuração obrigatoria.
+// Para manter os nomes iguais as tabelas no bancos, inserimos a configuração @@map() nela definimos o nome igual ao que esta no banco de dados.
+model Genre {
+  id     Int      @id @default(autoincrement())
+  name   String?  @db.VarChar(255)
+  movies Movie[]
+
+   @@map("genres")
+}
+
+model Language {
+  id     Int      @id @default(autoincrement())
+  name   String?  @db.VarChar(255)
+  movies Movie[]
+
+   @@map("languages")
+}
+
+model Movie {
+  id           Int        @id @default(autoincrement())
+  title        String     @db.VarChar(50)
+  release_data DateTime?  @db.Date
+  genre_id     Int?
+  language_id  Int?
+  oscar        Int?
+  genres       Genre?    @relation(fields: [genre_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_genre")
+  languages    Language? @relation(fields: [language_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_language")
+
+  @@map("movies")
 }

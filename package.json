@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Movie Flix Api",
   "main": "index.js",
+  "type":"module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
@@ -27,6 +28,8 @@
   },
   "dependencies": {
     "@prisma/client": "^5.16.2",
-    "express": "^4.19.2"
+    "@types/swagger-ui-express": "^4.1.6",
+    "express": "^4.19.2",
+    "swagger-ui-express": "^5.0.1"
   }
 }

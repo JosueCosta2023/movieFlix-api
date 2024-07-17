@@ -1,10 +1,17 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import swaggerui from "swagger-ui-express";
+import swaggerDocument from "../swagger.json";
+
 
 const port = 3000;
 const app = express();
 const prisma = new PrismaClient();
 app.use(express.json());
+
+
+app.use("/docs", swaggerui.serve, swaggerui.setup(swaggerDocument));
+
 
 app.get("/movies", async (_, res) => {
   const movies = await prisma.movie.findMany({
@@ -108,11 +115,9 @@ app.delete("/movies/:id", async (req, res) => {
     });
 
     if (!movieExist) {
-      return res
-        .status(404)
-        .send({
-          message: "Este filme não esta cadastrado em nossa base de dados.",
-        });
+      return res.status(404).send({
+        message: "Este filme não esta cadastrado em nossa base de dados.",
+      });
     }
 
     await prisma.movie.delete({
@@ -132,9 +137,9 @@ app.get("/movies/:genreName", async (req, res) => {
     //Receber o nome do genero pelo params
     // Filtrar os filmes do banco pelo genero.
     const moviesFilteredByName = await prisma.movie.findMany({
-      include:{
+      include: {
         genres: true,
-        languages: true
+        languages: true,
       },
       where: {
         genres: {

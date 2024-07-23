@@ -3,20 +3,17 @@ import { PrismaClient } from "@prisma/client";
 import swaggerui from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 
-
 const port = 3000;
 const app = express();
 const prisma = new PrismaClient();
 app.use(express.json());
 
-
 app.use("/docs", swaggerui.serve, swaggerui.setup(swaggerDocument));
-
 
 app.get("/movies", async (_, res) => {
   const movies = await prisma.movie.findMany({
     orderBy: {
-      release_data: "desc",
+      title: "asc",
     },
     include: {
       genres: true,
@@ -58,7 +55,7 @@ app.post("/movies", async (req, res) => {
       },
     });
 
-    res.status(200);
+    res.status(201);
     res.send("Filme cadastrado com sucesso.");
   } catch (e) {
     res.status(500).send({ message: "Falha ao cadastrar um filme." + e });
@@ -155,6 +152,108 @@ app.get("/movies/:genreName", async (req, res) => {
     res.status(200).send(moviesFilteredByName);
   } catch (error) {
     res.status(500).send({ message: "Falha ao filtrar filmes." });
+  }
+});
+
+app.put("/genres/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const genresExist = await prisma.genre.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!genresExist) {
+      res.status(404).send({ message: "Genero não cadastrado." });
+    }
+
+    const dados = { ...req.body };
+
+    await prisma.genre.update({
+      where: {
+        id,
+      },
+      data: dados,
+    });
+
+    res.status(200).send({ message: "Genero atualizado com sucesso!" });
+  } catch (e) {
+    res.status(500).send({ message: "Falha ao atuliazar nome de genero." });
+  }
+});
+
+app.post("/genres", async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const genreWithSameName = await prisma.genre.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (genreWithSameName) {
+      return res
+        .status(409)
+        .send({ message: "Já existe um genero cadastrado com este nome." });
+    }
+
+    await prisma.genre.create({
+      data: {
+        name,
+      },
+    });
+
+    res.status(201).send({ message: "Genero cadastrado com sucesso! " + name });
+  } catch (e) {
+    return res.status(500).send({ message: "Falha ao cadastrar novo genero." });
+  }
+});
+
+app.get("/genres", async (req, res) => {
+  try {
+    const genres = await prisma.genre.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+  
+    res.status(200).json(genres);
+
+  } catch (error) {
+    res.status(500).send({message: "Falha aom listar generos"});
+  }
+});
+
+app.delete("/genres/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const genreExist = await prisma.genre.findUnique({
+      where: {
+        id
+      }
+    });
+
+    if(!genreExist){
+      return res.status(404).send({message: "Genero inexistente."});
+    }
+
+    await prisma.genre.delete({
+      where: {
+        id
+      }
+    });
+
+    res.status(200).send({ message: "Genero excluido." });
+
+  } catch (error) {
+    return res.status(500).send({ message: "Falha ao excluir genero" });
   }
 });
 

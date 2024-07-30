@@ -28,7 +28,7 @@ model Movie {
   title         String     @db.VarChar(100)
   date_release  DateTime?  @db.Date
   director_name String     @db.VarChar(100)
-  duration      Int?
+  duration      Int
   genre_id      Int?
   language_id   Int?
   oscar         Int?

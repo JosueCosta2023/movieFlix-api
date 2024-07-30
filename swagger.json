@@ -34,7 +34,7 @@
         "/movies/{id}":{
             "put":{
                 "tags":["Movie Routes"],
-                "summary":"Atulizando filmes",
+                "summary":"Atualizando filmes",
                 "parameters":[{
                     "name":"id",
                     "in":"path",
@@ -146,6 +146,14 @@
                     "title":{
                         "type":"string",
                         "description":"Descrição do filme"
+                    },
+                    "director_name": {
+                        "type":"string",
+                        "description":"Nome do diretor do filme."
+                    },
+                    "duration":{
+                        "type":"integer",
+                        "description":"Duração do filme em minutos."
                     },
                     "genre_id":{
                         "type":"integer",

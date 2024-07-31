@@ -1,5 +1,5 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 
@@ -10,12 +10,54 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use("/docs-api", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get("/movies", async (_, res) => {
+app.get("/movies", async (req, res) => {
   try {
-    const movies = await prisma.movie.findMany({
-      orderBy: {
+    const { sort, language } = req.query;
+    const languageName = language as string;
+
+    let where = {};
+
+    if (languageName) {
+      where = {
+        languages: {
+          name: {
+            equals: languageName,
+            mode: "insensitive",
+          },
+        },
+      };
+    }
+
+    let orderBy:
+      | Prisma.MovieOrderByWithRelationInput
+      | Prisma.MovieOrderByWithRelationInput[]
+      | undefined;
+
+    if (sort === "id") {
+      orderBy = {
+        id: "asc",
+      };
+    } else if (sort === "title") {
+      orderBy = {
         title: "asc",
-      },
+      };
+    } else if (sort === "director_name") {
+      orderBy = {
+        director_name: "asc",
+      };
+    } else if (sort === "date_release") {
+      orderBy = {
+        date_release: "asc",
+      };
+    } else if (sort === "oscar") {
+      orderBy = {
+        oscar: "asc",
+      };
+    }
+
+    const movies = await prisma.movie.findMany({
+      orderBy,
+      where: where,
       include: {
         genre: true,
         languages: true,
@@ -28,8 +70,10 @@ app.get("/movies", async (_, res) => {
       movies.reduce((acc, movie) => acc + movie.duration, 0) / quantityFilm
     );
 
-    res.json({ movies, quantityFilm, averageDuration });
+    res.json({ quantityFilm, averageDuration, movies });
+
   } catch (error) {
+    console.error(error);
     return res.status(500).send({ message: "Falha ao listar filmes." });
   }
 });
@@ -74,6 +118,7 @@ app.post("/movies", async (req, res) => {
 
     res.status(201).send({ message: "Filme cadastrado com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao cadastrar filme." });
   }
 });
@@ -106,6 +151,7 @@ app.put("/movies/:id", async (req, res) => {
     });
     res.status(200).send({ message: "Filme atualizado com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao atualizar filme" });
   }
 });
@@ -130,6 +176,7 @@ app.delete("/movies/:id", async (req, res) => {
     });
     res.status(200).send({ message: "Filme deletado com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao deletar filme" });
   }
 });
@@ -146,6 +193,7 @@ app.get("/genres", async (_, res) => {
     }
     res.json(genres);
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao listar generos" });
   }
 });
@@ -175,6 +223,7 @@ app.post("/genres", async (req, res) => {
       .status(200)
       .send({ message: "Cadastro de genero realizado com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao cadastrar novo genero" });
   }
 });
@@ -204,7 +253,8 @@ app.put("/genres/:id", async (req, res) => {
     });
     res.status(201).send({ message: "Genero atualizado com sucesso!" });
   } catch (error) {
-    res.status(500).send({ message: "Falha ao atualizar genero" + error });
+    console.error(error);
+    res.status(500).send({ message: "Falha ao atualizar genero" });
   }
 });
 app.delete("/genres/:id", async (req, res) => {
@@ -229,6 +279,7 @@ app.delete("/genres/:id", async (req, res) => {
 
     res.status(200).send({ message: "Genero excluído com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao deletar genero." });
   }
 });
@@ -242,6 +293,7 @@ app.get("/languages", async (_, res) => {
     });
     res.json(data);
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao listar idiomas" });
   }
 });
@@ -269,6 +321,7 @@ app.post("/languages", async (req, res) => {
     });
     res.status(202).send({ message: "Idioma cadastrado com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao cadastrar novo idioma." });
   }
 });
@@ -296,6 +349,7 @@ app.put("/languages/:id", async (req, res) => {
     });
     res.status(202).send({ message: "Idioma atualizado com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao atualizar idioma." });
   }
 });
@@ -321,38 +375,84 @@ app.delete("/languages/:id", async (req, res) => {
 
     res.status(200).send({ message: "Idioma removido com sucesso!" });
   } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Falha ao remover idioma." });
   }
 });
 
 // MIX DE FILTROS
-app.get("/movies/:genreName", async (req, res) => {
+app.get("/move/genre", async (req, res) => {
   try {
-    const moviesFilteredByGener = await prisma.movie.findMany({
-      include: {
-        genre: true,
-        languages: true,
-      },
-      where: {
+    const { genre } = req.query;
+    const genreName = genre as string;
+
+    let where = {};
+
+    if (genreName) {
+      where = {
         genre: {
           name: {
-            equals: req.params.genreName,
+            equals: genreName,
             mode: "insensitive",
           },
         },
+      };
+    }
+
+    const movies = await prisma.movie.findMany({
+      where: where,
+      include: {
+        languages: true,
+        genre: true,
       },
     });
 
-    if (moviesFilteredByGener.length === 0) {
-      return res.status(404).send({ message: "Não há filmes cadastrados neste genero." });
+    res.json(movies);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Falha ao buscar filme pelo genero informado" });
+  }
+});
+app.get("/move/language", async (req, res) => {
+  try {
+    const { language } = req.query;
+    const languageName = language as string;
+
+    let where = {};
+    if (languageName) {
+      where = {
+        languages: {
+          name: {
+            equals: languageName,
+            mode: "insensitive",
+          },
+        },
+      };
     }
 
-    res.status(200).send(moviesFilteredByGener);
+    const movies = await prisma.movie.findMany({
+      where: where,
+      include: {
+        languages: true,
+        genre: true,
+      },
+    });
+
+    res.json(movies);
   } catch (error) {
-    res.status(500).send({ message: "Falha ao lista filme por genero." });
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Falha ao buscar filme com o idioma selecionado" });
   }
 });
 
 app.listen(port, () => {
-  console.log("Server online");
+  try {
+    console.log("Server online");
+  } catch (error) {
+    console.error(error);
+  }
 });

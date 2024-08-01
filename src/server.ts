@@ -192,9 +192,10 @@ app.get("/genres", async (_, res) => {
       return res.status(404).send({ message: "Não há generos cadastrados" });
     }
     res.json(genres);
+
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "Falha ao listar generos" });
+    res.status(500).send({ message: "Falha ao listar generos"});
   }
 });
 app.post("/genres", async (req, res) => {
@@ -211,7 +212,7 @@ app.post("/genres", async (req, res) => {
     });
 
     if (genreExist) {
-      return res.status(404).send({ message: "Genero já cadastrado" });
+      return res.status(409).send({ message: "Genero já cadastrado" });
     }
 
     await prisma.genre.create({
@@ -240,7 +241,7 @@ app.put("/genres/:id", async (req, res) => {
     });
 
     if (!genreExist) {
-      return res.status(404).send({ message: "Genero não cadastrado" });
+      return res.status(404).send({ message: "Genero não encontrado." });
     }
 
     const newData = { ...req.body };
@@ -251,7 +252,7 @@ app.put("/genres/:id", async (req, res) => {
       },
       data: newData,
     });
-    res.status(201).send({ message: "Genero atualizado com sucesso!" });
+    res.status(200).send({ message: "Genero atualizado com sucesso!" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Falha ao atualizar genero" });
@@ -319,7 +320,7 @@ app.post("/languages", async (req, res) => {
         name,
       },
     });
-    res.status(202).send({ message: "Idioma cadastrado com sucesso!" });
+    res.status(201).send({ message: "Idioma cadastrado com sucesso!" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Falha ao cadastrar novo idioma." });
@@ -347,7 +348,7 @@ app.put("/languages/:id", async (req, res) => {
       },
       data: newData,
     });
-    res.status(202).send({ message: "Idioma atualizado com sucesso!" });
+    res.status(200).send({ message: "Idioma atualizado com sucesso!" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Falha ao atualizar idioma." });
@@ -364,7 +365,7 @@ app.delete("/languages/:id", async (req, res) => {
     });
 
     if (!languageExist) {
-      return res.status(404).send({ message: "Idioma não cadastrado" });
+      return res.status(404).send({ message: "Idioma não cadastrado." });
     }
 
     await prisma.language.delete({

@@ -7,11 +7,30 @@
     },
 
     "paths":{
-        
         "/movies":{
             "get":{
                 "tags":["Movie Routes"],
-                "summary":"Obter todos os filmes",
+                "summary":"Obter todos os Filmes cadastrados.",
+                "parameters":[
+                    {
+                        "name":"sort",
+                        "in":"query",
+                        "required":false,
+                        "description":"Escolha um campo para filtrar.",
+                        "schema":{
+                            "type":"string"
+                        }
+                    },
+                    {
+                        "name":"language",
+                        "in":"query",
+                        "required":false,
+                        "description":"Escolha um idioma para filtrar.",
+                        "schema":{
+                            "type":"string"
+                        }
+                    }
+                ],
                 "responses":{
                     "200":{
                         "description":"Retorna uma lista de filmes.",
@@ -25,16 +44,16 @@
                                 }
                             }
                         }
-                    }
-                },
-                "":""
+                    },
+                    "500":{"description":"Falha ao listar filmes."}
+                }
             }
-        },
+        },        
 
         "/movies/{id}":{
             "put":{
                 "tags":["Movie Routes"],
-                "summary":"Atualizando filmes",
+                "summary":"Atualizar filmes",
                 "parameters":[{
                     "name":"id",
                     "in":"path",
@@ -70,7 +89,7 @@
 
             "delete":{
                 "tags":["Movie Routes"],
-                "summary":"Remover filmes",
+                "summary":"Deletar filmes",
                 "parameters":[
                     {
                         "name":"id",
@@ -96,21 +115,10 @@
             }
         },
 
-        "/movies/{genreName}":{
+        "/genres":{
             "get":{
-                "tags":["Movie Routes"],
-                "summary":"Filtrar filmes por genero",
-                "parameters":[
-                    {
-                        "name":"genreName",
-                        "in":"path",
-                        "required":true,
-                        "description":"Nome do genero a ser listado.",
-                        "schema":{
-                            "type":"string"
-                        }
-                    }
-                ],
+                "tags":["Genres Routes"],
+                "summary":"Obter todos os generos cadastrados.",
                 "responses":{
                     "200":{
                         "content":{
@@ -118,18 +126,208 @@
                                 "schema":{
                                     "type":"array",
                                     "items":{
-                                        "$ref":"#/components/schemas/Movie"
+                                        "$ref":"#/components/schemas/Genres"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404":{
+                        "description":"Não há generos cadastrados"
+                    },
+                    "500":{
+                        "description":"Falha ao listar generos"
+                    }
+                }
+            },
+            "post":{
+                "tags":["Genres Routes"],
+                "summary":"Cadastrar novo Genero.",
+                "requestBody":{
+                    "required":true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schemas/GenresInput"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description":"Genero Cadastrado com sucesso!"
+                    },
+                    "409":{
+                        "description":"Genero já cadastrado."
+                    },
+                    "500":{
+                        "description":"Falha ao cadastrar novo genero."
+                    }
+                }
+            }
+        },
+
+        "/genres/{id}":{
+            "put":{
+                "tags":["Genres Routes"],
+                "summary":"Atualizar Genero",
+                "parameters":[{
+                   "name":"id",
+                    "in":"path",
+                    "required":true,
+                    "description":"Id do genero a ser atualizado.",
+                    "schema":{
+                        "type":"integer"
+                    }
+                }],
+                "requestBody":{
+                    "required":true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schemas/GenresInput"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{
+                        "description":"Genero atualizado com sucesso!"
+                    },
+                    "404":{
+                        "description":"Genero não encontrado."
+                    },
+                    "500":{
+                        "description":"Falha ao atualizar genero."
+                    }
+                }
+            },
+            "delete":{
+                "tags":["Genres Routes"],
+                "summary":"Deletar Genero",
+                "parameters":[{
+                    "name":"id",
+                    "in":"path",
+                    "required":true,
+                    "description":"Id do genero a ser Deletado.",
+                    "schema":{
+                        "type":"integer"
+                    }
+                }],
+                "responses":{
+                    "200":{
+                        "description":"Genero excluído com sucesso!"
+                    },
+                    "404":{
+                        "description":"Genero não cadastrado."
+                    },
+                    "500":{
+                        "description":"Falha ao deletar genero."
+                    }
+                }
+            }
+        },
+
+        "/languages":{
+            "get":{
+                "tags":["Languages Routes"],
+                "summary":"Obter todos os idiomas cadastrados.",
+                "responses":{
+                    "200":{
+                        "content":{
+                            "application/json":{
+                                "schema":{
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/components/schemas/Languages"
                                     }
                                 }
                             }
                         }
                     },
                     "500":{
-                        "description":"Falha ao filtrar filmes por genero."
+                        "description":"Falha ao listar idiomas."
                     }
+                }
+            },
+            "post":{
+                "tags":["Languages Routes"],
+                "summary":"Cadastrar novo Idioma",
+                "requestBody":{
+                    "required": true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schemas/LanguagesInput"
+                            }
+                        }
+                    }    
+                },
+                "responses":{
+                        "201":{
+                            "description":"Idioma cadastrado com sucesso!"
+                        },
+                        "409":{
+                            "description":"Idioma já cadastrado."
+                        },
+                        "500":{
+                            "description":"Falha ao cadastrar novo idioma."
+                        }
+                    }
+            }
+        },
+        "/languages/{id}":{
+            "put":{
+                "tags":["Languages Routes"],
+                "summary":"Atualizar Idioma",
+                "parameters":[{
+                    "name":"id",
+                    "in":"path",
+                    "required":true,
+                    "description":"Id do idioma a ser atualizado.",
+                    "schema":{
+                        "type":"integer"
+                    }
+                }],
+                "requestBody":{
+                    "required":true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schemas/LanguagesInput"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{"description":"Idioma atualizado com sucesso!"},
+                    "404":{"description":"Idioma não cadastrado."},
+                    "500":{"description":"Falha ao atualizar idioma."}
+                }
+            },
+            "delete":{
+                "tags":["Languages Routes"],
+                "summary":"Deletar Idioma",
+                "parameters":[{
+                    "name":"id",
+                    "in":"path",
+                    "required":true,
+                    "description":"Id do idioma a ser Deletado.",
+                    "schema":{
+                        "type":"integer"
+                    }
+                }],
+                "responses":{
+                    "200":{"description":"Idioma removido com sucesso!"},
+                    "404":{"description":"Idioma não cadastrado."},
+                    "500":{"description":"Falha ao remover idioma."}
                 }
             }
         }
+
+
+
+
 
         
     },
@@ -139,6 +337,14 @@
             "Movie":{
                 "type":"object",
                 "properties":{
+                    "quantityFilm":{
+                        "type":"integer",
+                        "description":"Quantidade de filmes obtida na listagem."
+                    }, 
+                    "averageDuration":{
+                        "type":"integer",
+                        "description":"Duração media do filmes da listagem."
+                    }, 
                     "id":{
                         "type":"integer",
                         "description":"Id do Filme"
@@ -200,7 +406,7 @@
                     }
                 }
             },
-
+                
             "MovieInput":{
                 "type":"object",
                 "required":[
@@ -212,28 +418,80 @@
                 ],
                 "properties":{
                     "title":{
-                        "title":"string",
+                        "type":"string",
                         "description":"Titulo do filme"
                     },
                     "genre_id":{
-                        "title":"integer",
+                        "type":"integer",
                         "description":"Id do genero do filme"
                     },
                     "language_id":{
-                        "title":"integer",
+                        "type":"integer",
                         "description":"Id do idioma do filme"
                     },
                     "oscar_count":{
-                        "title":"integer",
+                        "type":"integer",
                         "description":"Quantidade de oscar's obtidos."
                     },
                     "release_data":{
-                        "title":"string",
+                        "type":"string",
                         "format":"date",
                         "description":"Data de lançamento do filme."
                     }
                 }
+            },
+
+            "Genres": {
+                "type":"object",
+                "properties":{
+                    "id":{
+                        "type":"integer",
+                        "description":"Id do genero"
+                    },
+                    "name":{
+                        "type":"string",
+                        "description":"Nome do genero"
+                    }
+                }
+            },
+            "GenresInput": {
+                "type":"object",
+                "required":[
+                    "name"
+                ],
+                "properties":{
+                    "name":{
+                        "type":"string",
+                        "description":"Nome do genero"
+                    }
+                }
+            },
+
+            "Languages": {
+                "type":"object",
+                "properties":{
+                    "id":{
+                        "type":"integer",
+                        "description":"Id do Idioma"
+                    },
+                    "name":{
+                        "type":"string",
+                        "description":"Nome do Idioma"
+                    }
+                }
+            },
+            "LanguagesInput": {
+                "type":"object",
+                "required":[
+                    "name"
+                ],
+                "properties":{
+                    "name":{
+                        "type":"string",
+                        "description":"Nome do Idioma"
+                    }
+                }
             }
-        }
     }
+}
 }

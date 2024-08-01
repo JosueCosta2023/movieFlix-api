@@ -21,10 +21,9 @@ Este projeto consiste em uma API RESTful para o gerenciamento de um banco de dad
 ## Inicializar o Servidor
 
 ## Script's Disponíveis
- 
-    "dev" - Executa o servidor
+`dev` - Executa o servidor
 
-    "lint" - Executa as regras de codificação, criado para manter a padronização no codigo.   
+`lint` - Executa as regras de codificação, criado para manter a padronização no codigo.   
 
 ## Técnologias Utilizadas
 

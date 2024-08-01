@@ -26,7 +26,27 @@ Este projeto consiste em uma API RESTful para o gerenciamento de um banco de dad
 `lint` - Executa as regras de codificação, criado para manter a padronização no codigo.   
 
 ## Técnologias Utilizadas
+- **Node.js**
+
+- **Express.js**
+
+- **Eslint**
+
+- **Prisma**
+
+- **Thunder Client**
+
+- **Swagger**
+
+- **PostgreSQL**
+
+- **TypeScript**
+
+- **DBeaver**
 
 ## Contribuição
 
 ## Licenças
+Este projeto é licenciado sob a [MIT LICENSE](LICENSE)
+
+Antes de realizar alterações por gentileza leia o arquivo de licença.

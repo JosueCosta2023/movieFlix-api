@@ -47,6 +47,26 @@
                     },
                     "500":{"description":"Falha ao listar filmes."}
                 }
+            },
+
+            "post":{
+                "tags":["Movie Routes"],
+                "summary":"Cadastrar novo Filme",
+                "requestBody":{
+                    "required":true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schemas/MovieInput"
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "200":{"description":"Filme cadastrado com sucesso!"},
+                    "409":{"description":"Já existe um filme cadastrado com este titulo."},
+                    "500":{"description":"Falha ao cadastrar filme."}
+                }
             }
         },        
 
@@ -323,13 +343,7 @@
                     "500":{"description":"Falha ao remover idioma."}
                 }
             }
-        }
-
-
-
-
-
-        
+        }   
     },
 
     "components":{
@@ -406,20 +420,29 @@
                     }
                 }
             },
-                
             "MovieInput":{
                 "type":"object",
                 "required":[
                     "title",
+                    "director_name",
+                    "duration",
                     "genre_id",
                     "language_id",
-                    "oscar_count",
-                    "release_data"
+                    "oscar",
+                    "date_release"
                 ],
                 "properties":{
                     "title":{
                         "type":"string",
                         "description":"Titulo do filme"
+                    },
+                    "director_name":{
+                        "type":"string",
+                        "description":"Nome do diretor do filme."
+                    },
+                    "duration":{
+                        "type":"integer",
+                        "description":"Duração do filme em minutos."
                     },
                     "genre_id":{
                         "type":"integer",
@@ -429,11 +452,11 @@
                         "type":"integer",
                         "description":"Id do idioma do filme"
                     },
-                    "oscar_count":{
+                    "oscar":{
                         "type":"integer",
                         "description":"Quantidade de oscar's obtidos."
                     },
-                    "release_data":{
+                    "date_release":{
                         "type":"string",
                         "format":"date",
                         "description":"Data de lançamento do filme."

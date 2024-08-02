@@ -117,6 +117,7 @@ app.post("/movies", async (req, res) => {
     });
 
     res.status(201).send({ message: "Filme cadastrado com sucesso!" });
+    
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Falha ao cadastrar filme." });

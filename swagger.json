@@ -2,7 +2,7 @@
     "openapi":"3.0.0",
     "info":{
         "title":"MovieFlix Api",
-        "description":"API responsável por genrenciar os filmes do MovieFlix.",
+        "description":"Esta API foi projetada para facilitar o gerenciamento de um catálogo de filmes, oferecendo operações completas para manipulação de dados. Os desenvolvedores têm à disposição endpoints que permitem cadastrar, atualizar, deletar e listar filmes, gêneros e idiomas de forma individualizada. Com uma estrutura clara e intuitiva, a API garante que todas as operações necessárias para manter o catálogo atualizado e organizado e sejam realizadas de maneira eficiente.",
         "version":"1.0.0"
     },
 
@@ -409,11 +409,11 @@
                             }
                         }
                     },
-                    "oscar_count":{
+                    "oscar":{
                         "type":"integer",
                         "description":"Quantidade de oscar's obtidos."
                     },
-                    "release_data":{
+                    "date_release":{
                         "type":"string",
                         "format":"date",
                         "description":"Data de lançamento do filme."
